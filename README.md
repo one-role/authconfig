@@ -26,7 +26,7 @@ MIT
 
 ## Author Information
 ------------------
-  - Ton Kersten <tonk@atcomputing.nl>
+  - Ton Kersten <tonk@smartowl.nl>
 
 
 ## Changelog
