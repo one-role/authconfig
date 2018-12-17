@@ -1,0 +1,38 @@
+#
+# Ansible information:
+#     Filename : {{ template_path | regex_replace("/etc/ansible[^/]*", "...") }}
+#     Hostname : {{ template_host }}
+#
+
+#
+# Configure the LDAP name service daemon
+#
+# This nslcd service uses `ssl`.
+# The LDAPS works, and could also work with a future HAProxy.
+#
+# http://www.openldap.org/faq/data/cache/605.html
+# (ldaps is deprecated in favor of start_tls)
+#
+uid nslcd
+gid ldap
+uri ldaps://ldap.example.net:7636
+base dc=example,dc=net
+ssl on
+tls_cacertdir /etc/openldap/cacerts
+tls_cacertfile {{ authconfig_certdir }}/{{ authconfig_certname }}
+pam_authz_search (&(objectClass=posixAccount)(uid=$username)(|(memberOf=cn=ssh,ou={{ inventory_hostname }},ou=Servers,ou=Applications,ou=Permissions,dc=example,dc=net)(memberOf=cn=ssh,ou=all-servers,ou=Servers,ou=Applications,ou=Permissions,dc=example,dc=net)))
+
+# Set a low idle timeout to workaround disconnect issues.
+## Is a known bug, seems to be fixed in nslcd v0.7.12 or v0.7.13, and later.
+## CentOS 6 has v0.7.5 with various security patches.
+## Note: nslcd only checks this timeout when a new request is made.
+##	 On less frequently used servers this may delay a new login a bit.
+idle_timelimit 240
+# Define timelimit for connecting to LDAP server
+bind_timelimit 30
+# Timelimit for searches
+timelimit 30
+
+# -------------------------------------------------------------------
+# Copyright (c) 2012-today by {{ company }}
+# -------------------------------------------------------------------

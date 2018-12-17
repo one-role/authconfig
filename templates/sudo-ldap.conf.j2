@@ -1,0 +1,17 @@
+#
+# Ansible information:
+#     Filename : {{ template_path | regex_replace("/etc/ansible[^/]*", "...") }}
+#     Hostname : {{ template_host }}
+#
+
+#sudoers_debug 2
+
+URI {{ authconfig_ldapserver }}
+TLS_CACERTDIR {{ authconfig_ldapcertdir }}
+
+SUDOERS_BASE ou=Servers,ou=Applications,ou=Permissions,dc=example,dc=net
+SUDOERS_SEARCH_FILTER (&(|(ou:dn:=all-servers)(ou:dn:={{ ansible_fqdn }}))(objectClass=sudoRole))
+
+# -------------------------------------------------------------------
+# Copyright (c) 2012-today by {{ company }}
+# -------------------------------------------------------------------

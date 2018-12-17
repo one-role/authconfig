@@ -1,0 +1,17 @@
+#
+#
+# Ansible information:
+#     Filename : {{ template_path | regex_replace("/etc/ansible[^/]*", "...") }}
+#     Hostname : {{ template_host }}
+#
+
+uri {{ authconfig_ldapserver }}
+ssl on
+tls_cacertdir {{ authconfig_ldapcertdir }}
+pam_password md5
+base {{ authconfig_ldapbasedn }}
+pam_filter |(|(memberOf=cn=ssh,ou={{ ansible_fqdn }},ou=Servers,ou=Applications,ou=Permissions,dc=example,dc=net)(memberOf=cn=ssh,ou=all-servers,ou=Servers,ou=Applications,ou=Permissions,dc=example,dc=net))
+
+# -------------------------------------------------------------------
+# Copyright (c) 2012-today by {{ company }}
+# -------------------------------------------------------------------
