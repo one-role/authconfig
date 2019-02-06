@@ -1,0 +1,82 @@
+---
+- name: authconfig | ensure all needed packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - openldap-clients
+    - nss-pam-ldapd
+    - oddjob-mkhomedir
+
+- name: authconfig | ensure the ldap directory
+  file:
+    name: "{{ authconfig_ldapcertdir }}"
+    state: directory
+    owner: root
+    group: root
+    mode:  0755
+    setype: etc_t
+
+- name: authconfig | ensure the ldap certificate in LDAP
+  copy:
+    src: "{{ authconfig_certname }}"
+    dest: "{{ authconfig_ldapcertdir }}/{{ authconfig_certname }}"
+    owner: root
+    group: root
+    mode:  0644
+    setype: etc_t
+
+- name: authconfig | ensure the ldap certificate in PKI
+  copy:
+    src: "{{ authconfig_certname }}"
+    dest: "{{ authconfig_certdir }}/{{ authconfig_certname }}"
+    owner: root
+    group: root
+    mode:  0644
+    setype: etc_t
+  notify: update_ca_trust
+
+- name: authconfig | ensure the sudoers configuration
+  template:
+    src: sudo-ldap.conf.j2
+    dest: /etc/sudo-ldap.conf
+    owner: root
+    group: root
+    mode:  0640
+    setype: etc_t
+
+- name: authconfig | ensure the nsswitch configuration
+  template:
+    src: nsswitch.conf.j2
+    dest: /etc/nsswitch.conf
+    owner: root
+    group: root
+    mode:  0644
+    setype: etc_t
+
+- name: authconfig | configure authconfig
+  authconfig:
+    ldapserver: "{{ authconfig_ldapserver }}"
+    ldapbasedn: "{{ authconfig_ldapbasedn }}"
+    enableshadow: "{{ authconfig_enableshadow }}"
+    enableldapauth: "{{ authconfig_enableldapauth }}"
+    enableldap: "{{ authconfig_enableldap }}"
+    enablecache: "{{ authconfig_enablecache }}"
+    enablemkhomedir: yes
+    enableforcelegacy: yes
+
+- name: authconfig | ensure the nslcd configuration
+  template:
+    src: nslcd.conf.j2
+    dest: /etc/nslcd.conf
+    owner: root
+    group: root
+    mode:  0640
+    setype: etc_t
+  notify: restart_nslcd
+
+- name: authconfig | ensure nslcd running
+  service:
+    name: nslcd
+    state: started
+    enabled: yes

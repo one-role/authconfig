@@ -1,0 +1,8 @@
+---
+- name: restart_nslcd
+  service:
+    name: nslcd
+    state: restarted
+
+- name: update_ca_trust
+  command: /usr/bin/update-ca-trust
