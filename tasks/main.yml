@@ -14,7 +14,7 @@
     state: directory
     owner: root
     group: root
-    mode:  0755
+    mode: 0755
     setype: etc_t
 
 - name: authconfig | ensure the ldap certificate in LDAP
@@ -23,7 +23,7 @@
     dest: "{{ authconfig_ldapcertdir }}/{{ authconfig_certname }}"
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
     setype: etc_t
 
 - name: authconfig | ensure the ldap certificate in PKI
@@ -32,7 +32,7 @@
     dest: "{{ authconfig_certdir }}/{{ authconfig_certname }}"
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
     setype: etc_t
   notify: update_ca_trust
 
@@ -42,7 +42,7 @@
     dest: /etc/sudo-ldap.conf
     owner: root
     group: root
-    mode:  0640
+    mode: 0640
     setype: etc_t
 
 - name: authconfig | ensure the nsswitch configuration
@@ -51,7 +51,7 @@
     dest: /etc/nsswitch.conf
     owner: root
     group: root
-    mode:  0644
+    mode: 0644
     setype: etc_t
 
 - name: authconfig | configure authconfig
@@ -71,7 +71,7 @@
     dest: /etc/nslcd.conf
     owner: root
     group: root
-    mode:  0640
+    mode: 0640
     setype: etc_t
   notify: restart_nslcd
 
